@@ -18,7 +18,8 @@ private:
     enum {
         TileLetterRole = Qt::UserRole+1,
         TilePointsRole = Qt::UserRole+2,
-        TileIndexEmptyRole = Qt::UserRole+3
+        TileIndexEmptyRole = Qt::UserRole+3,
+        TileStartRole = Qt::UserRole+4
     };
     TileStorage* m_storage;
 };

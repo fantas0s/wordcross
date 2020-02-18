@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         gamegridmodel.cpp \
         main.cpp \
+        tile.cpp \
         tilestorage.cpp
 
 RESOURCES += qml.qrc
@@ -33,4 +34,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     gamegridmodel.h \
+    tile.h \
     tilestorage.h

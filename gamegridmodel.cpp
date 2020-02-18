@@ -1,4 +1,5 @@
 #include "gamegridmodel.h"
+#include <QDebug>
 
 GameGridModel::GameGridModel(QObject* parent)
     : QAbstractItemModel(parent)
@@ -18,12 +19,12 @@ QModelIndex GameGridModel::parent(const QModelIndex &child) const
 
 int GameGridModel::rowCount(const QModelIndex &parent) const
 {
-    return m_storage->requiredGridHeight();
+    return m_storage->gridHeight();
 }
 
 int GameGridModel::columnCount(const QModelIndex &parent) const
 {
-    return m_storage->requiredGridWidth();
+    return m_storage->gridWidth();
 }
 
 QVariant GameGridModel::data(const QModelIndex &index, int role) const
@@ -33,11 +34,13 @@ QVariant GameGridModel::data(const QModelIndex &index, int role) const
         switch( role )
         {
         case TileLetterRole:
-            return m_storage->tileAt(index.column(), index.row());
+            return m_storage->tileAt(index.column(), index.row()).getChar();
         case TilePointsRole:
             return QVariant(int(1));
         case TileIndexEmptyRole:
-            return m_storage->locationIsEmpty(index.column(), index.row());
+            return !m_storage->tileAt(index.column(), index.row()).isValid();
+        case TileStartRole:
+            return m_storage->tileAt(index.column(), index.row()).getState() == Tile::Start;
         default:
             return QVariant();
         }
@@ -51,5 +54,6 @@ QHash<int, QByteArray> GameGridModel::roleNames() const
     roles[TileLetterRole] = "letter";
     roles[TilePointsRole] = "points";
     roles[TileIndexEmptyRole] = "slotIsEmpty";
+    roles[TileStartRole] = "isStartSlot";
     return roles;
 }

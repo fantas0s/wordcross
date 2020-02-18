@@ -12,4 +12,5 @@ QtObject {
     property color tileTextColor: "black"
     property color slotBorderColor: "black"
     property color emptySlotColor: "darkgray"
+    property color startMarkColor: "green"
 }

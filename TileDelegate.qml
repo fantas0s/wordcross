@@ -14,6 +14,14 @@ Rectangle {
         height: parent.height - Constants.tileWidth / 10
         color: Constants.emptySlotColor
         visible: slotIsEmpty
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width / 2
+            height: parent.height / 2
+            radius: width / 2
+            color: Constants.startMarkColor
+            visible: isStartSlot
+        }
     }
     Rectangle {
         id: tileRect
