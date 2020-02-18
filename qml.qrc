@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qmldir</file>
+        <file>main.qml</file>
+        <file>TileDelegate.qml</file>
+        <file>LetterRow.qml</file>
+        <file>Constants.qml</file>
+    </qresource>
+</RCC>
