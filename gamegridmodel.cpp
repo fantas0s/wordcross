@@ -9,21 +9,25 @@ GameGridModel::GameGridModel(QObject* parent)
 
 QModelIndex GameGridModel::index(int row, int column, const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return createIndex(row, column);
 }
 
 QModelIndex GameGridModel::parent(const QModelIndex &child) const
 {
+    Q_UNUSED(child)
     return QModelIndex();
 }
 
 int GameGridModel::rowCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_storage->gridHeight();
 }
 
 int GameGridModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent)
     return m_storage->gridWidth();
 }
 
@@ -36,7 +40,7 @@ QVariant GameGridModel::data(const QModelIndex &index, int role) const
         case TileLetterRole:
             return m_storage->tileAt(index.column(), index.row()).getChar();
         case TilePointsRole:
-            return QVariant(int(1));
+            return m_storage->tileAt(index.column(), index.row()).getPoints();
         case TileIndexEmptyRole:
             return !m_storage->tileAt(index.column(), index.row()).isValid();
         case TileStartRole:

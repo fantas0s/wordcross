@@ -1,6 +1,5 @@
 #include "tilestorage.h"
-#include <QRandomGenerator>
-static QRandomGenerator rand_gen;
+#include <QDebug>
 
 TileStorage* TileStorage::s_instance = nullptr;
 
@@ -39,5 +38,11 @@ int TileStorage::gridHeight() const
 
 Tile TileStorage::tileAt(int xPos, int yPos) const
 {
-    return m_grid[yPos][xPos];
+    if (yPos < m_grid.length()) {
+        if (xPos < m_grid[yPos].length()) {
+            return m_grid[yPos][xPos];
+        }
+    }
+    qWarning() << Q_FUNC_INFO << "Invalid request xPos:" << xPos << "yPos:" << yPos;
+    return Tile();
 }

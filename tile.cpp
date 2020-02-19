@@ -1,8 +1,10 @@
 #include "tile.h"
+#include "charutils.h"
 
 Tile::Tile()
     : m_state(Empty)
     , m_char(' ')
+    , m_points(-1)
 {
 }
 
@@ -10,11 +12,13 @@ Tile::Tile(QChar value)
     : m_state(Proposal)
     , m_char(value)
 {
+    m_points = CharUtils::getPointsForChar(m_char);
 }
 
 Tile::Tile(const Tile& other)
     : m_state(other.m_state)
     , m_char(other.m_char)
+    , m_points(other.m_points)
 {
 }
 
@@ -33,6 +37,11 @@ bool Tile::isValid() const
 QChar Tile::getChar() const
 {
     return m_char;
+}
+
+int Tile::getPoints() const
+{
+    return m_points;
 }
 
 Tile::State Tile::getState() const

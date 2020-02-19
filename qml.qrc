@@ -5,5 +5,6 @@
         <file>TileDelegate.qml</file>
         <file>LetterRow.qml</file>
         <file>Constants.qml</file>
+        <file>UITile.qml</file>
     </qresource>
 </RCC>
