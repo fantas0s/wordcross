@@ -18,7 +18,7 @@ TileStorage::TileStorage(QObject *parent) : QObject(parent)
     }
 }
 
-TileStorage* TileStorage::getInstance()
+QObject* TileStorage::tileStorageProvider(QQmlEngine* engine, QJSEngine* scriptEngine)
 {
     if (!s_instance) {
         s_instance = new TileStorage();

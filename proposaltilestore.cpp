@@ -11,8 +11,10 @@ ProposalTileStore::ProposalTileStore(QObject *parent) : QObject(parent)
     }
 }
 
-ProposalTileStore* ProposalTileStore::getInstance()
+QObject* ProposalTileStore::proposalTileStoreProvider(QQmlEngine* engine, QJSEngine* scriptEngine)
 {
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
     if (!s_instance) {
         s_instance = new ProposalTileStore();
     }
@@ -26,10 +28,28 @@ int ProposalTileStore::size() const
 
 Tile ProposalTileStore::tileAt(int idx) const
 {
-    if (idx < size()) {
+    if ((idx >= 0) && (idx < size())) {
         return m_list[idx];
     } else {
         qWarning() << Q_FUNC_INFO << "Invalid request idx:" << idx;
         return Tile();
+    }
+}
+
+void ProposalTileStore::appendTile(QChar tileLetter)
+{
+    emit beginRowInsertion(m_list.size(),m_list.size());
+    m_list.append(Tile(tileLetter));
+    emit endRowInsertion();
+}
+
+void ProposalTileStore::removeTile(int idx)
+{
+    if ((idx >= 0) && (idx < size())) {
+        emit beginRowRemoval(idx,idx);
+        m_list.removeAt(idx);
+        emit endRowRemoval();
+    } else {
+        qWarning() << Q_FUNC_INFO << "Invalid request idx:" << idx;
     }
 }

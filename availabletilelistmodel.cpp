@@ -4,7 +4,12 @@
 AvailableTileListModel::AvailableTileListModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    m_storage = ProposalTileStore::getInstance();
+    m_storage = qobject_cast<ProposalTileStore*>(ProposalTileStore::proposalTileStoreProvider(nullptr, nullptr));
+    Q_ASSERT(m_storage);
+    connect(m_storage, &ProposalTileStore::beginRowInsertion, this, &AvailableTileListModel::beginRowInsertion);
+    connect(m_storage, &ProposalTileStore::endRowInsertion, this, &AvailableTileListModel::endRowInsertion);
+    connect(m_storage, &ProposalTileStore::beginRowRemoval, this, &AvailableTileListModel::beginRowRemoval);
+    connect(m_storage, &ProposalTileStore::endRowRemoval, this, &AvailableTileListModel::endRowRemoval);
 }
 
 QModelIndex AvailableTileListModel::index(int row, int column, const QModelIndex &parent) const
@@ -48,4 +53,24 @@ QHash<int, QByteArray> AvailableTileListModel::roleNames() const
     roles[TileLetterRole] = "letter";
     roles[TilePointsRole] = "points";
     return roles;
+}
+
+void AvailableTileListModel::beginRowInsertion(int firstIdx, int lastIdx)
+{
+    beginInsertRows(QModelIndex(), firstIdx, lastIdx);
+}
+
+void AvailableTileListModel::endRowInsertion()
+{
+    endInsertRows();
+}
+
+void AvailableTileListModel::beginRowRemoval(int firstIdx, int lastIdx)
+{
+    beginRemoveRows(QModelIndex(), firstIdx, lastIdx);
+}
+
+void AvailableTileListModel::endRowRemoval()
+{
+    endRemoveRows();
 }

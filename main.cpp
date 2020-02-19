@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     qmlRegisterType<GameGridModel>("GameGridModel", 1, 0, "GameGridModel");
     qmlRegisterType<AvailableTileListModel>("AvailableTileListModel", 1, 0, "AvailableTileListModel");
+    qmlRegisterSingletonType<ProposalTileStore>("ProposalTileStore", 1, 0, "ProposalTileStore", ProposalTileStore::proposalTileStoreProvider);
+    qmlRegisterSingletonType<TileStorage>("TileStorage", 1, 0, "TileStorage", TileStorage::tileStorageProvider);
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {

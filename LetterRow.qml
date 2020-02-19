@@ -12,6 +12,23 @@ Rectangle {
        delegate: UITile {
            text: letter
            pointsText: points
+           MouseArea {
+               anchors.fill: parent
+               drag.target: floatingTile
+               drag.axis: Drag.XAndYAxis
+               onPressed: {
+                   rootWindow.moveOngoing = true
+                   rootWindow.indexOnMove = index
+                   floatingTile.x = mapToGlobal(mouse.x, mouse.y).x - (Constants.tileWidth * 1.5)
+                   floatingTile.y = mapToGlobal(mouse.x, mouse.y).y - (Constants.tileWidth * 0.5)
+                   floatingTile.text = letter
+                   floatingTile.pointsText = points
+               }
+               onReleased: {
+                   rootWindow.moveOngoing = false
+                   rootWindow.dropAttemptToGrid()
+               }
+           }
        }
        spacing: 10
    }

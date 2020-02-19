@@ -4,7 +4,8 @@
 GameGridModel::GameGridModel(QObject* parent)
     : QAbstractItemModel(parent)
 {
-    m_storage = TileStorage::getInstance();
+    m_storage = qobject_cast<TileStorage*>(TileStorage::tileStorageProvider(nullptr, nullptr));
+    Q_ASSERT(m_storage);
 }
 
 QModelIndex GameGridModel::index(int row, int column, const QModelIndex &parent) const

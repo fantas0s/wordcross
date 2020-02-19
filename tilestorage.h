@@ -4,11 +4,14 @@
 #include <QObject>
 #include <QList>
 
+class QQmlEngine;
+class QJSEngine;
+
 class TileStorage : public QObject
 {
     Q_OBJECT
 public:
-    static TileStorage* getInstance();
+    static QObject* tileStorageProvider(QQmlEngine* engine, QJSEngine* scriptEngine);
     int gridWidth() const;
     int gridHeight() const;
     Tile tileAt(int xPos, int yPos) const;
