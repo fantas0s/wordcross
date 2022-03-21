@@ -14,6 +14,7 @@ public:
     Tile();
     Tile(QChar value);
     Tile(const Tile& other);
+    const Tile& operator =(const Tile& other);
     static Tile startTile();
     bool isValid() const;
     QChar getChar() const;

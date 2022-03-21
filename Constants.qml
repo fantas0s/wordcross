@@ -1,6 +1,6 @@
 pragma Singleton
-import QtQuick 2.12
-import QtQuick.Window 2.12
+import QtQuick 2.15
+import QtQuick.Window 2.15
 
 QtObject {
     property int windowWidth: Screen.width

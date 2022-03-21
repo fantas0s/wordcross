@@ -21,7 +21,10 @@ private slots:
 private:
     enum {
         TileLetterRole = Qt::UserRole+1,
-        TilePointsRole = Qt::UserRole+2
+        TilePointsRole = Qt::UserRole+2,
+        TileIndexEmptyRole = Qt::UserRole+3,
+        TileStartRole = Qt::UserRole+4,
+        InGridRole = Qt::UserRole+5
     };
     ProposalTileStore* m_storage;
 };

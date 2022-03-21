@@ -14,8 +14,10 @@ public:
     static QObject* tileStorageProvider(QQmlEngine* engine, QJSEngine* scriptEngine);
     int gridWidth() const;
     int gridHeight() const;
-    Tile tileAt(int xPos, int yPos) const;
-    void advance();
+    Tile tileAt(int row, int column) const;
+    Q_INVOKABLE bool addTile(int row, int column, QString text);
+signals:
+    void tileUpdated(int row, int column);
 private:
     typedef QList<Tile> TileRow;
     typedef QList<TileRow> TileGrid;

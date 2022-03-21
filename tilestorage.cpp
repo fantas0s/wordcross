@@ -5,10 +5,10 @@ TileStorage* TileStorage::s_instance = nullptr;
 
 TileStorage::TileStorage(QObject *parent) : QObject(parent)
 {
-    for (int i = 0 ; i < 13 ; ++i) {
+    for (int row = 0 ; row < 13 ; ++row) {
         TileRow rowToAdd;
-        for (int j = 0 ; j < 13 ; ++j) {
-            if (i==6 && j==6) {
+        for (int column = 0 ; column < 13 ; ++column) {
+            if (row==6 && column==6) {
                 rowToAdd.append(Tile::startTile());
             } else {
                 rowToAdd.append(Tile());
@@ -20,6 +20,8 @@ TileStorage::TileStorage(QObject *parent) : QObject(parent)
 
 QObject* TileStorage::tileStorageProvider(QQmlEngine* engine, QJSEngine* scriptEngine)
 {
+    Q_UNUSED(engine)
+    Q_UNUSED(scriptEngine)
     if (!s_instance) {
         s_instance = new TileStorage();
     }
@@ -36,13 +38,24 @@ int TileStorage::gridHeight() const
     return m_grid.length();
 }
 
-Tile TileStorage::tileAt(int xPos, int yPos) const
+Tile TileStorage::tileAt(int row, int column) const
 {
-    if (yPos < m_grid.length()) {
-        if (xPos < m_grid[yPos].length()) {
-            return m_grid[yPos][xPos];
+    if (row < m_grid.length()) {
+        const TileRow& tileRow = m_grid.at(row);
+        if (column < tileRow.length()) {
+            return tileRow.at(column);
         }
     }
-    qWarning() << Q_FUNC_INFO << "Invalid request xPos:" << xPos << "yPos:" << yPos;
     return Tile();
+}
+
+bool TileStorage::addTile(int row, int column, QString text)
+{
+    if (tileAt(row, column).getState() == Tile::State::Empty) {
+        TileRow& tileRow = m_grid[row];
+        tileRow[column] = Tile(text[0]);
+        emit tileUpdated(row, column);
+        return true;
+    }
+    return false;
 }

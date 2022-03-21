@@ -2,22 +2,11 @@
 #include <QDebug>
 
 GameGridModel::GameGridModel(QObject* parent)
-    : QAbstractItemModel(parent)
+    : QAbstractTableModel(parent)
 {
     m_storage = qobject_cast<TileStorage*>(TileStorage::tileStorageProvider(nullptr, nullptr));
     Q_ASSERT(m_storage);
-}
-
-QModelIndex GameGridModel::index(int row, int column, const QModelIndex &parent) const
-{
-    Q_UNUSED(parent)
-    return createIndex(row, column);
-}
-
-QModelIndex GameGridModel::parent(const QModelIndex &child) const
-{
-    Q_UNUSED(child)
-    return QModelIndex();
+    connect(m_storage, &TileStorage::tileUpdated, this, &GameGridModel::tileUpdated);
 }
 
 int GameGridModel::rowCount(const QModelIndex &parent) const
@@ -39,13 +28,15 @@ QVariant GameGridModel::data(const QModelIndex &index, int role) const
         switch( role )
         {
         case TileLetterRole:
-            return m_storage->tileAt(index.column(), index.row()).getChar();
+            return m_storage->tileAt(index.row(), index.column()).getChar();
         case TilePointsRole:
-            return m_storage->tileAt(index.column(), index.row()).getPoints();
+            return m_storage->tileAt(index.row(), index.column()).getPoints();
         case TileIndexEmptyRole:
-            return !m_storage->tileAt(index.column(), index.row()).isValid();
+            return !m_storage->tileAt(index.row(), index.column()).isValid();
         case TileStartRole:
-            return m_storage->tileAt(index.column(), index.row()).getState() == Tile::Start;
+            return m_storage->tileAt(index.row(), index.column()).getState() == Tile::Start;
+        case InGridRole:
+            return true;
         default:
             return QVariant();
         }
@@ -60,5 +51,12 @@ QHash<int, QByteArray> GameGridModel::roleNames() const
     roles[TilePointsRole] = "points";
     roles[TileIndexEmptyRole] = "slotIsEmpty";
     roles[TileStartRole] = "isStartSlot";
+    roles[InGridRole] = "isInGrid";
     return roles;
+}
+
+void GameGridModel::tileUpdated(int row, int column)
+{
+    const QModelIndex updatedIndex = index(row, column);
+    emit dataChanged(updatedIndex, updatedIndex);
 }

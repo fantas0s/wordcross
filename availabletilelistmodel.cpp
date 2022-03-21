@@ -40,6 +40,12 @@ QVariant AvailableTileListModel::data(const QModelIndex &index, int role) const
             return m_storage->tileAt(index.row()).getChar();
         case TilePointsRole:
             return m_storage->tileAt(index.row()).getPoints();
+        case TileIndexEmptyRole:
+            return false;
+        case TileStartRole:
+            return false;
+        case InGridRole:
+            return false;
         default:
             return QVariant();
         }
@@ -52,6 +58,9 @@ QHash<int, QByteArray> AvailableTileListModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[TileLetterRole] = "letter";
     roles[TilePointsRole] = "points";
+    roles[TileIndexEmptyRole] = "slotIsEmpty";
+    roles[TileStartRole] = "isStartSlot";
+    roles[InGridRole] = "isInGrid";
     return roles;
 }
 

@@ -22,6 +22,14 @@ Tile::Tile(const Tile& other)
 {
 }
 
+const Tile &Tile::operator =(const Tile &other)
+{
+    m_state = other.m_state;
+    m_char = other.m_char;
+    m_points = other.m_points;
+    return *this;
+}
+
 Tile Tile::startTile()
 {
     Tile tileToReturn;
