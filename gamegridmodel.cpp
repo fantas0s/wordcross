@@ -7,6 +7,10 @@ GameGridModel::GameGridModel(QObject* parent)
     m_storage = qobject_cast<TileStorage*>(TileStorage::tileStorageProvider(nullptr, nullptr));
     Q_ASSERT(m_storage);
     connect(m_storage, &TileStorage::tileUpdated, this, &GameGridModel::tileUpdated);
+    connect(m_storage, &TileStorage::rowsWillBeAdded, this, &GameGridModel::rowsWillBeAdded);
+    connect(m_storage, &TileStorage::rowsAdded, this, &GameGridModel::rowsAdded);
+    connect(m_storage, &TileStorage::columnsWillBeAdded, this, &GameGridModel::columnsWillBeAdded);
+    connect(m_storage, &TileStorage::columnsAdded, this, &GameGridModel::columnsAdded);
 }
 
 int GameGridModel::rowCount(const QModelIndex &parent) const
@@ -62,4 +66,24 @@ void GameGridModel::tileUpdated(int row, int column)
 {
     const QModelIndex updatedIndex = index(row, column);
     emit dataChanged(updatedIndex, updatedIndex);
+}
+
+void GameGridModel::rowsWillBeAdded(int begin, int end)
+{
+    beginInsertRows(QModelIndex(), begin, end);
+}
+
+void GameGridModel::rowsAdded()
+{
+    endInsertRows();
+}
+
+void GameGridModel::columnsWillBeAdded(int begin, int end)
+{
+    beginInsertColumns(QModelIndex(), begin, end);
+}
+
+void GameGridModel::columnsAdded()
+{
+    endInsertColumns();
 }

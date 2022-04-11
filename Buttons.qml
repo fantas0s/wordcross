@@ -13,7 +13,7 @@ Rectangle {
             onClicked: {
                 if (TileStorage.isValid()) {
                     ProposalTileStore.refill();
-                    TileStorage.advance();
+                    TileStorage.lockTiles();
                 }
             }
         }

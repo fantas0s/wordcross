@@ -14,6 +14,10 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 private slots:
     void tileUpdated(int row, int column);
+    void rowsWillBeAdded(int begin, int end);
+    void rowsAdded();
+    void columnsWillBeAdded(int begin, int end);
+    void columnsAdded();
 private:
     enum {
         TileLetterRole = Qt::UserRole+1,

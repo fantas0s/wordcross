@@ -18,14 +18,29 @@ public:
     Q_INVOKABLE bool isValid() const;
 signals:
     void tileUpdated(int row, int column);
+    void rowsWillBeAdded(int begin, int end);
+    void rowsAdded();
+    void columnsWillBeAdded(int begin, int end);
+    void columnsAdded();
 public slots:
-    void advance();
+    void lockTiles();
     void addTile(int row, int column, QString text);
     void removeTile(int row, int column);
 private:
-    const Tile findStart() const;
     typedef QList<Tile> TileRow;
     typedef QList<TileRow> TileGrid;
+    void advance();
+    void reframe();
+    const Tile findStart() const;
+    int getFirstX() const;
+    int getFirstY() const;
+    int getLastX() const;
+    int getLastY() const;
+    void appendColumns(int numOfNewColumns);
+    void prependColumns(int numOfNewColumns);
+    void appendRows(int numOfNewRows);
+    void prependRows(int numOfNewRows);
+    bool hasNonEmptyTile(const TileRow &tileRow) const;
     explicit TileStorage(QObject *parent = nullptr);
     static TileStorage* s_instance;
     TileGrid m_grid;
