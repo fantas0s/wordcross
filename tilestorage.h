@@ -15,10 +15,15 @@ public:
     int gridWidth() const;
     int gridHeight() const;
     Tile tileAt(int row, int column) const;
-    Q_INVOKABLE bool addTile(int row, int column, QString text);
+    Q_INVOKABLE bool isValid() const;
 signals:
     void tileUpdated(int row, int column);
+public slots:
+    void advance();
+    void addTile(int row, int column, QString text);
+    void removeTile(int row, int column);
 private:
+    const Tile findStart() const;
     typedef QList<Tile> TileRow;
     typedef QList<TileRow> TileGrid;
     explicit TileStorage(QObject *parent = nullptr);

@@ -19,9 +19,10 @@ signals:
     void endRowInsertion();
     void beginRowRemoval(int, int);
     void endRowRemoval();
+    void tileUpdated(int idx);
 public slots:
-    void appendTile(QChar tileLetter);
-    void removeTile(int idx);
+    void refill();
+    void setTile(int idx, QChar tileLetter);
 private:
     explicit ProposalTileStore(QObject *parent = nullptr);
     static ProposalTileStore* s_instance;

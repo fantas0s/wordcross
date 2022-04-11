@@ -6,5 +6,6 @@
         <file>LetterRow.qml</file>
         <file>Constants.qml</file>
         <file>UITile.qml</file>
+        <file>Buttons.qml</file>
     </qresource>
 </RCC>

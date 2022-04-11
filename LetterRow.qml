@@ -10,6 +10,7 @@ Rectangle {
        orientation: Qt.Horizontal;
        model: AvailableTileListModel{}
        delegate: TileDelegate {
+           inBottomRow: true
        }
        spacing: 10
    }

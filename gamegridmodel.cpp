@@ -32,11 +32,13 @@ QVariant GameGridModel::data(const QModelIndex &index, int role) const
         case TilePointsRole:
             return m_storage->tileAt(index.row(), index.column()).getPoints();
         case TileIndexEmptyRole:
-            return !m_storage->tileAt(index.row(), index.column()).isValid();
+            return m_storage->tileAt(index.row(), index.column()).getState() == Tile::State::Empty;
         case TileStartRole:
-            return m_storage->tileAt(index.row(), index.column()).getState() == Tile::Start;
-        case InGridRole:
-            return true;
+            return m_storage->tileAt(index.row(), index.column()).getStart();
+        case RecentRole:
+            return m_storage->tileAt(index.row(), index.column()).getState() == Tile::State::Recent;
+        case NewRole:
+            return m_storage->tileAt(index.row(), index.column()).getState() == Tile::State::Proposal;
         default:
             return QVariant();
         }
@@ -51,7 +53,8 @@ QHash<int, QByteArray> GameGridModel::roleNames() const
     roles[TilePointsRole] = "points";
     roles[TileIndexEmptyRole] = "slotIsEmpty";
     roles[TileStartRole] = "isStartSlot";
-    roles[InGridRole] = "isInGrid";
+    roles[RecentRole] = "isRecent";
+    roles[NewRole] = "isNew";
     return roles;
 }
 

@@ -36,20 +36,28 @@ Tile ProposalTileStore::tileAt(int idx) const
     }
 }
 
-void ProposalTileStore::appendTile(QChar tileLetter)
+void ProposalTileStore::refill()
 {
-    emit beginRowInsertion(m_list.size(),m_list.size());
-    m_list.append(Tile(tileLetter));
-    emit endRowInsertion();
+    for (int idx = 0 ; idx < m_list.size() ; ++idx) {
+        if (m_list.at(idx).getState() == Tile::State::Empty) {
+            m_list[idx] = Tile(CharUtils::getRandomChar());
+            emit tileUpdated(idx);
+        }
+    }
 }
 
-void ProposalTileStore::removeTile(int idx)
+void ProposalTileStore::setTile(int idx, QChar tileLetter)
 {
-    if ((idx >= 0) && (idx < size())) {
-        emit beginRowRemoval(idx,idx);
-        m_list.removeAt(idx);
-        emit endRowRemoval();
+    if (idx < m_list.size()) {
+        if (tileLetter == '.') {
+            m_list[idx] = Tile();
+        } else {
+            m_list[idx] = Tile(tileLetter);
+        }
+        emit tileUpdated(idx);
     } else {
-        qWarning() << Q_FUNC_INFO << "Invalid request idx:" << idx;
+        emit beginRowInsertion(m_list.size(),m_list.size());
+        m_list.append(Tile(tileLetter));
+        emit endRowInsertion();
     }
 }

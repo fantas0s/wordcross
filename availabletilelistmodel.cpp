@@ -10,18 +10,7 @@ AvailableTileListModel::AvailableTileListModel(QObject* parent)
     connect(m_storage, &ProposalTileStore::endRowInsertion, this, &AvailableTileListModel::endRowInsertion);
     connect(m_storage, &ProposalTileStore::beginRowRemoval, this, &AvailableTileListModel::beginRowRemoval);
     connect(m_storage, &ProposalTileStore::endRowRemoval, this, &AvailableTileListModel::endRowRemoval);
-}
-
-QModelIndex AvailableTileListModel::index(int row, int column, const QModelIndex &parent) const
-{
-    Q_UNUSED(parent)
-    return createIndex(row, column);
-}
-
-QModelIndex AvailableTileListModel::parent(const QModelIndex &child) const
-{
-    Q_UNUSED(child)
-    return QModelIndex();
+    connect(m_storage, &ProposalTileStore::tileUpdated, this, &AvailableTileListModel::tileUpdated);
 }
 
 int AvailableTileListModel::rowCount(const QModelIndex &parent) const
@@ -41,10 +30,10 @@ QVariant AvailableTileListModel::data(const QModelIndex &index, int role) const
         case TilePointsRole:
             return m_storage->tileAt(index.row()).getPoints();
         case TileIndexEmptyRole:
-            return false;
+            return m_storage->tileAt(index.row()).getState() == Tile::State::Empty;
         case TileStartRole:
-            return false;
-        case InGridRole:
+        case RecentRole:
+        case NewRole:
             return false;
         default:
             return QVariant();
@@ -60,7 +49,8 @@ QHash<int, QByteArray> AvailableTileListModel::roleNames() const
     roles[TilePointsRole] = "points";
     roles[TileIndexEmptyRole] = "slotIsEmpty";
     roles[TileStartRole] = "isStartSlot";
-    roles[InGridRole] = "isInGrid";
+    roles[RecentRole] = "isRecent";
+    roles[NewRole] = "isNew";
     return roles;
 }
 
@@ -82,4 +72,9 @@ void AvailableTileListModel::beginRowRemoval(int firstIdx, int lastIdx)
 void AvailableTileListModel::endRowRemoval()
 {
     endRemoveRows();
+}
+
+void AvailableTileListModel::tileUpdated(int idx)
+{
+    emit dataChanged(index(idx), index(idx));
 }

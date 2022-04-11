@@ -14,22 +14,21 @@ Window {
 
     ColumnLayout {
         anchors.fill: parent
-        Rectangle {
-            width: Constants.windowWidth
-            height: Constants.windowHeight / 10
-            color: "darkgray"
+        Buttons {
+            width: rootWindow.width
+            height: Constants.buttonRowHeight
             z: 10
         }
         TableView {
             id: tableView
-            width: Constants.windowWidth
+            width: rootWindow.width
             model: GameGridModel{}
             delegate: TileDelegate{}
             Layout.fillHeight: true
         }
         LetterRow {
-            width: Constants.windowWidth
-            height: Constants.windowHeight / 10
+            width: rootWindow.width
+            height: Constants.tileRowHeight
             z: 10
         }
     }

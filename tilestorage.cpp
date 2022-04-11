@@ -49,13 +49,55 @@ Tile TileStorage::tileAt(int row, int column) const
     return Tile();
 }
 
-bool TileStorage::addTile(int row, int column, QString text)
+bool TileStorage::isValid() const
+{
+    if (findStart().getState() == Tile::State::Empty) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+void TileStorage::advance()
+{
+    for (int row = 0 ; row < m_grid.size() ; ++row) {
+        TileRow& tileRow = m_grid[row];
+        for (int column = 0 ; column < tileRow.size() ; ++column) {
+            if (tileRow[column].levelUp()) {
+                emit tileUpdated(row, column);
+            }
+        }
+    }
+}
+
+void TileStorage::addTile(int row, int column, QString text)
 {
     if (tileAt(row, column).getState() == Tile::State::Empty) {
         TileRow& tileRow = m_grid[row];
         tileRow[column] = Tile(text[0]);
         emit tileUpdated(row, column);
-        return true;
     }
-    return false;
+}
+
+void TileStorage::removeTile(int row, int column)
+{
+    if (tileAt(row, column).getState() != Tile::State::Empty) {
+        TileRow& tileRow = m_grid[row];
+        tileRow[column] = Tile();
+        emit tileUpdated(row, column);
+    }
+}
+
+const Tile TileStorage::findStart() const
+{
+    for (int row = 0 ; row < m_grid.size() ; ++row) {
+        const TileRow& tileRow = m_grid.at(row);
+        for (int column = 0 ; column < tileRow.size() ; ++column) {
+            if (tileRow.at(column).getStart()) {
+                return tileRow.at(column);
+            }
+        }
+    }
+    /* We have already replaced start. Just return a tile. */
+    return Tile('Q');
 }

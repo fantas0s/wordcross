@@ -4,10 +4,12 @@ Rectangle {
     id: tileRoot
     width: Constants.tileWidth * 0.9
     height: Constants.tileHeight * 0.9
+    property bool isNew: false
+    property bool isRecent: false
     property alias text: tileLetter.text
     property alias pointsText: tilePoints.text
     radius: Constants.tileWidth * 0.1
-    color: Constants.tileColor
+    color: isNew ? Constants.newTileColor : isRecent ? Constants.recentTileColor : Constants.tileColor
     Text {
         id: tileLetter
         anchors.centerIn: parent
