@@ -11,11 +11,21 @@ class TileStorage : public QObject
 {
     Q_OBJECT
 public:
+    enum Error {
+        TilesDetached = -4,
+        StartWordNotOnStartTile = -3,
+        TilesNotInSameRowColumn = -2,
+        TilesNotInSameWord = -1,
+        NoTiles = 0,
+        NoError = 1
+    };
+    Q_ENUM(Error)
     static QObject* tileStorageProvider(QQmlEngine* engine, QJSEngine* scriptEngine);
     int gridWidth() const;
     int gridHeight() const;
     Tile tileAt(int row, int column) const;
-    Q_INVOKABLE bool isValid() const;
+    Q_INVOKABLE TileStorage::Error checkErrors() const;
+    Q_INVOKABLE QStringList checkInvalidWords() const;
 signals:
     void tileUpdated(int row, int column);
     void rowsWillBeAdded(int begin, int end);
@@ -31,6 +41,16 @@ private:
     typedef QList<TileRow> TileGrid;
     void advance();
     void reframe();
+    int countOfLockedTiles() const;
+    int countOfProposalTiles() const;
+    int columnOfProposalTiles() const;
+    int rowOfProposalTiles() const;
+    bool columnContainsProposalTiles(int column) const;
+    bool rowContainsProposalTiles(int row) const;
+    bool proposalTileColumnHasSpaces(int column) const;
+    bool proposalTileRowHasSpaces(int row) const;
+    bool proposalTileNextToLockedtileExists() const;
+    bool isAdjacentToLockedtile(int row, int column) const;
     const Tile findStart() const;
     int getFirstX() const;
     int getFirstY() const;

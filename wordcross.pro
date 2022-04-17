@@ -19,6 +19,7 @@ SOURCES += \
         gamegridmodel.cpp \
         main.cpp \
         proposaltilestore.cpp \
+        testingstate.cpp \
         tile.cpp \
         tilestorage.cpp
 
@@ -40,5 +41,6 @@ HEADERS += \
     charutils.h \
     gamegridmodel.h \
     proposaltilestore.h \
+    testingstate.h \
     tile.h \
     tilestorage.h

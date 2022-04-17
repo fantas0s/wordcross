@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
+import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import GameGridModel 1.0
 import "."
@@ -30,6 +31,20 @@ Window {
             width: rootWindow.width
             height: Constants.tileRowHeight
             z: 10
+        }
+    }
+    Dialog {
+        id: _errorPopup
+        property alias text: _errorLabel.text
+        width: 400
+        height: 200
+        x: (rootWindow.width / 2) - (width / 2)
+        y: (rootWindow.height / 2) - (height / 2)
+        title: qsTr("Error")
+        standardButtons: Dialog.Ok
+        Label {
+            id: _errorLabel
+            anchors.centerIn: parent
         }
     }
 }

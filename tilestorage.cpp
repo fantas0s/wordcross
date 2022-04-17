@@ -1,4 +1,5 @@
 #include "tilestorage.h"
+#include "testingstate.h"
 #include <QDebug>
 
 TileStorage* TileStorage::s_instance = nullptr;
@@ -49,13 +50,47 @@ Tile TileStorage::tileAt(int row, int column) const
     return Tile();
 }
 
-bool TileStorage::isValid() const
+TileStorage::Error TileStorage::checkErrors() const
 {
-    if (findStart().getState() == Tile::State::Empty) {
-        return false;
-    } else {
-        return true;
+    if (countOfProposalTiles() == 0) {
+        return NoTiles;
     }
+    if (findStart().getState() == Tile::State::Empty) {
+        return StartWordNotOnStartTile;
+    }
+    const int row = rowOfProposalTiles();
+    const int column = columnOfProposalTiles();
+    if (row < 0) {
+        /* Not on same row */
+        if (column < 0) {
+            /* And not on same column either. */
+            return TilesNotInSameRowColumn;
+        } else {
+            /* one same column. Check that there are no spaces */
+            if (proposalTileColumnHasSpaces(column)) {
+                return TilesNotInSameWord;
+            }
+            /* Else OK */
+        }
+    } else {
+        /* one same row. Check that there are no spaces */
+        if (proposalTileRowHasSpaces(row)) {
+            return TilesNotInSameWord;
+        }
+        /* Else OK */
+    }
+    if (countOfLockedTiles() > 0) {
+        if (!proposalTileNextToLockedtileExists()) {
+            return TilesDetached;
+        }
+        /* else OK */
+    }
+    return NoError;
+}
+
+QStringList TileStorage::checkInvalidWords() const
+{
+    return QStringList();
 }
 
 void TileStorage::lockTiles()
@@ -84,7 +119,7 @@ void TileStorage::removeTile(int row, int column)
 
 void TileStorage::advance()
 {
-    for (int row = 0 ; row < m_grid.size() ; ++row) {
+    for (int row = 0 ; row < gridHeight() ; ++row) {
         TileRow& tileRow = m_grid[row];
         for (int column = 0 ; column < tileRow.size() ; ++column) {
             if (tileRow[column].levelUp()) {
@@ -114,9 +149,159 @@ void TileStorage::reframe()
     }
 }
 
+int TileStorage::countOfLockedTiles() const
+{
+    int lockedCount = 0;
+    for (const TileRow& tileRow : m_grid) {
+        for (const Tile& tile : tileRow) {
+            if ((tile.getState() == Tile::State::Recent) ||
+                (tile.getState() == Tile::State::Old)){
+                lockedCount++;
+            }
+        }
+    }
+    return lockedCount;
+}
+
+int TileStorage::countOfProposalTiles() const
+{
+    int proposalCount = 0;
+    for (const TileRow& tileRow : m_grid) {
+        for (const Tile& tile : tileRow) {
+            if (tile.getState() == Tile::State::Proposal) {
+                proposalCount++;
+            }
+        }
+    }
+    return proposalCount;
+}
+
+int TileStorage::columnOfProposalTiles() const
+{
+    int retVal = -1;
+    for (int column = 0 ; column < gridWidth() ; ++column) {
+        if (columnContainsProposalTiles(column)) {
+            if (retVal < 0) {
+                retVal = column;
+            } else {
+                /* At least two columns with proposal tiles. */
+                retVal= -1;
+                break;
+            }
+        }
+    }
+    return retVal;
+}
+
+int TileStorage::rowOfProposalTiles() const
+{
+    int retVal = -1;
+    for (int row = 0 ; row < gridHeight() ; ++row) {
+        if (rowContainsProposalTiles(row)) {
+            if (retVal < 0) {
+                retVal = row;
+            } else {
+                /* At least two rows with proposal tiles. */
+                retVal= -1;
+                break;
+            }
+        }
+    }
+    return retVal;
+}
+
+bool TileStorage::columnContainsProposalTiles(int column) const
+{
+    for (const TileRow& tileRow : m_grid) {
+        const Tile& tile = tileRow.at(column);
+        if (tile.getState() == Tile::State::Proposal) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TileStorage::rowContainsProposalTiles(int row) const
+{
+    const TileRow& tileRow = m_grid.at(row);
+    for (const Tile& tile : tileRow) {
+        if (tile.getState() == Tile::State::Proposal) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool TileStorage::proposalTileColumnHasSpaces(int column) const
+{
+    TestingState state;
+    for (const TileRow& tileRow : m_grid) {
+        const Tile& tile = tileRow.at(column);
+        state.stateChange(tile);
+        if (!state.isValid()) {
+            break;
+        }
+    }
+    return !state.isValid();
+}
+
+bool TileStorage::proposalTileRowHasSpaces(int row) const
+{
+    const TileRow& tileRow = m_grid.at(row);
+    TestingState state;
+    for (const Tile& tile : tileRow) {
+        state.stateChange(tile);
+        if (!state.isValid()) {
+            break;
+        }
+    }
+    return !state.isValid();
+}
+
+bool TileStorage::proposalTileNextToLockedtileExists() const
+{
+    for (int row = 0 ; row < gridHeight() ; ++row) {
+        const TileRow& tileRow = m_grid.at(row);
+        for (int column = 0 ; column < gridWidth() ; ++column) {
+            const Tile& tile = tileRow.at(column);
+            if (tile.getState() == Tile::State::Proposal) {
+                if (isAdjacentToLockedtile(row, column)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool TileStorage::isAdjacentToLockedtile(int row, int column) const
+{
+    Tile currentTile = tileAt(row-1, column);
+    if ((currentTile.getState() == Tile::State::Old) ||
+        (currentTile.getState() == Tile::State::Recent)) {
+        return true;
+    }
+    currentTile = tileAt(row+1, column);
+    if ((currentTile.getState() == Tile::State::Old) ||
+        (currentTile.getState() == Tile::State::Recent)) {
+        return true;
+    }
+    currentTile = tileAt(row, column-1);
+    if ((currentTile.getState() == Tile::State::Old) ||
+        (currentTile.getState() == Tile::State::Recent)) {
+        return true;
+    }
+    currentTile = tileAt(row, column+1);
+    if ((currentTile.getState() == Tile::State::Old) ||
+        (currentTile.getState() == Tile::State::Recent)) {
+        return true;
+    }
+    return false;
+}
+
 const Tile TileStorage::findStart() const
 {
-    for (int row = 0 ; row < m_grid.size() ; ++row) {
+    for (int row = 0 ; row < gridHeight() ; ++row) {
         const TileRow& tileRow = m_grid.at(row);
         for (int column = 0 ; column < tileRow.size() ; ++column) {
             if (tileRow.at(column).getStart()) {
